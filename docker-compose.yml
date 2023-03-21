@@ -1,0 +1,41 @@
+version: '3.1'
+
+services:
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    image: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: mypassword
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - ~/Dev/efcs/MariaDB:/var/lib/mysql
+
+  php:    
+    build: ./requirements/php
+    container_name: php
+    networks:
+      - backend
+    depends_on:
+      - mariadb
+    volumes:
+      - ./html:/var/www/html
+
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    depends_on:
+      - php
+      - mariadb
+    ports:
+      - 80:80
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - ./html:/var/www/html
+networks:
+  frontend:
+  backend:
